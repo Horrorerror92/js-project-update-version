@@ -37,7 +37,7 @@ const homeworkContainer = document.querySelector('#homework-container');
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
 
-import {loadAndSortTowns as loadTowns } from './index';
+import { loadAndSortTowns as loadTowns } from './index';
 
 /*
  Функция должна проверять встречается ли подстрока chunk в строке full
@@ -52,16 +52,16 @@ import {loadAndSortTowns as loadTowns } from './index';
  */
 function isMatching(full, chunk) {
 
- let str = full.toLowerCase();
- let searchValue = chunk.toLowerCase();  
+    let str = full.toLowerCase();
+    let searchValue = chunk.toLowerCase();  
 
-if (str.indexOf(searchValue) !== -1) {
+    if (str.indexOf(searchValue) !== -1) {
 
-    return true;
-} else {
+        return true;
+
+    }
 
     return false;
-    }
   
 }
 
@@ -75,7 +75,23 @@ const filterInput = homeworkContainer.querySelector('#filter-input');
 const filterResult = homeworkContainer.querySelector('#filter-result');
 
 filterInput.addEventListener('keyup', function() {
-   //filterResult 
+    filterResult.innerHTML = '';
+    loadTowns().then((foo) =>{
+        foo.forEach(function(e) {
+            if (isMatching(e.name, filterInput.value)) {
+                let content = document.createElement('div');
+
+                content.innerHTML = e.name;
+                filterResult.appendChild(content);
+                loadingBlock.style.display = 'none';
+                filterBlock.style.display = 'block';
+                if (filterInput.value === '') {
+                    filterResult.innerHTML = ''; 
+                }
+            }
+        });
+    })
+
     // это обработчик нажатия кливиш в текстовом поле
 });
 
