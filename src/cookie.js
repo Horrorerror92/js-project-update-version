@@ -45,17 +45,65 @@ const listTable = homeworkContainer.querySelector('#list-table tbody');
 
 filterNameInput.addEventListener('keyup', function() {
     // здесь можно обработать нажатия на клавиши внутри текстового поля для фильтрации cookie
+    generateTable();
 });
 
 addButton.addEventListener('click', () => {
 
     // здесь можно обработать нажатие на кнопку "добавить cookie"
-
+    
     document.cookie = `${addNameInput.value} = ${addValueInput.value}`;
-
-    addNameInput.value = '';
-    addValueInput.value = '';
-
+    generateTable();
     
 });
 
+listTable.addEventListener('click', (e) => {
+  
+    if (e.target.dataset.forcookies) {
+        document.cookie = `${e.target.dataset.forcookies}=;expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+    }
+    generateTable();
+});
+
+function getCookies() {
+
+    return document.cookie
+        .split('; ')
+        .filter(Boolean)
+        .map(cookie => cookie.match(/^([^=]+)=(.+)/))
+        .reduce((obj, [, name, value]) => {
+            obj[name] = value;
+
+            return obj;
+        }, {});
+}
+
+function isMatching(full, chunk) {
+
+    let str = full.toLowerCase();
+    let searchValue = chunk.toLowerCase();  
+
+    if (str.indexOf(searchValue) !== -1) {
+
+        return true;
+
+    }
+
+    return false;
+}
+
+function generateTable() {
+    const items = getCookies();
+
+    listTable.innerHTML = '';
+    for (let item in items) {
+        if (!( isMatching(items[item], filterNameInput.value) || isMatching(item, filterNameInput.value))) { 
+            continue;
+        }
+        listTable.innerHTML += 
+        `<tr>
+        <td>${item}</td>
+        <td>${items[item]}</td><td>
+        <button data-forcookies="${item}">Удалить</button></td></tr>`;
+    }
+}
